@@ -4,17 +4,31 @@ output: html_document
 date: 'March 30, 2022 '
 ---
 
+My goal was to translate a famous animation into an animation of different subject matter that I chose. So, I start with the code for Hans Rosling’s awesome animated plot of econ development data by continent. I want to take that code, and animate the relationship between US military deaths and US military suicides, in the period of the Iraq and Afghan wars. 
+Note: The animation of the military data begins on line 56 below. 
+
 ```{r Packages}
 install.packages(c('gapminder','ggplot2','gganimate','gifski'))
 ```
 
 ```{r Gapminder}
 library(gapminder)
+library(gganimate)
+library(ggplot2)
 gapminder
+df=gapminder
+as.data.frame(gapminder)
 ```
 
+
+```{r Df to CSV}
+library(readr)
+write_csv(df, "~/Documents/GitHub/Portfolio2Test/gapfinder_df.csv")
+```
+
+
 ```{r Scatterplot}
-ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+ggplot(data = df, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
    geom_point(alpha = 0.7, show.legend = FALSE) +
    scale_colour_manual(values = country_colors) +
    scale_size(range = c(2, 12)) +
@@ -22,24 +36,26 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
    facet_wrap(~continent) +
    labs(title = 'Year: 1952-2007', x = 'GDP per capita', y = 'Life expectancy')
 ```
-
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r Save plot to file}
+ggsave('plot_gdpPercap_lifeExp_static.png', width=8, height=8)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r Animating}
+p1 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+             geom_point(alpha = 0.7, show.legend = FALSE) +
+             scale_colour_manual(values = country_colors) +
+             scale_size(range = c(2, 12)) +
+             scale_x_log10() +
+  facet_wrap(~continent) +
+             labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'Life expectancy') +
+             transition_time(year) +
+             ease_aes('linear')
+animate(p1)
+anim_save('plot_gdpPercap_lifeExp.gif')
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+So far so good. That works! Now to incorporate the death on Soldier deaths and suicides. 
+
+
+
+
