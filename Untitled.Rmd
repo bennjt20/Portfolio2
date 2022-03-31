@@ -4,8 +4,8 @@ output: html_document
 date: 'March 30, 2022'
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r Packages}
+install.packages(c('gapminder','ggplot2','gganimate','gifski'))
 ```
 
 ## R Markdown
